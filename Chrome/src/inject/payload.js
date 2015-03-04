@@ -70,60 +70,60 @@ chrome.storage.sync.get("userPaths", function (obj) {
             }
         }
         else {
-
-            var el = document.getElementsByClassName('message btn iconify_envelope_b en');
-            if (el.length > 0)
+            
+            selfURL = document.URL;
+            
+            // check user in the list
+            if (userPaths[selfURL] == 0)
             {
-                selfURL = document.URL;
-                
-                // check user in the list
-                if (userPaths[selfURL] == 0)
+                // mark it done
+                userPaths[selfURL] = 1;
+                console.log('done!');
+
+                // update list
+                data['userPaths'] = userPaths;
+                chrome.storage.sync.set(data, function() { console.log("Saved", data); });
+
+                var el = document.getElementsByClassName('message btn iconify_envelope_b en');
+                if (el.length > 0)
                 {
                     el[0].click();
 
                     // 1. wait for page to load
                     // 2. send message
                     window.setTimeout(function() {
-                        var h1content = document.getElementById('content');
-                        var h1span = h1content.getElementsByTagName('span')[0];
-                        var userFullName = h1span.childNodes[0].nodeValue;
-
-                        document.getElementById('cm_message').value = 'Hey '+userFullName+','
-                        +"\n\n"
-                        +"I like the art you are making. Your content is creative and engaging.\n"
-                        +"\n"
-                        +"Join the group of content creators. These people are vimeoers, youtubers, bloggers, artists and many other creative people from other niche community."
-                        +"\n\n"
-                        +"I am Girish, Co-Founder of Rime would like to invite you to join Rime  https://rime.co/?invited_by=Girish ."
-                        +"\n\n"
-                        +"I would love to help you setting up account if needed. It will take couple of minute to setup your rime profile and within an hour your contents will be visible to others."
-                        +"\n\n"
-                        +"Thank you, and let me know how I can return the favour. "
-                        +"\n\n"
-                        +"Thanks"+"\n"
-                        +"Girish N"+"\n"
-                        +"Web : https://rime.co/@Girish"+"\n"
-                        +"E-mail : girishnayak@rime.co";
-
 
                         var count = document.getElementsByClassName('stat_list_count');
                         countValue = count[0].childNodes[0].nodeValue;
 
                         if (countValue > 5)
                         {
+                            var h1content = document.getElementById('content');
+                            var h1span = h1content.getElementsByTagName('span')[0];
+                            var userFullName = h1span.childNodes[0].nodeValue;
+
+                            document.getElementById('cm_message').value = 'Hey '+userFullName+','
+                            +"\n\n"
+                            +"I like the art you are making. Your content is creative and engaging.\n"
+                            +"\n"
+                            +"Join the group of content creators. These people are vimeoers, youtubers, bloggers, artists and many other creative people from other niche community."
+                            +"\n\n"
+                            +"I am Girish, Co-Founder of Rime would like to invite you to join Rime  https://rime.co/?invited_by=Girish ."
+                            +"\n\n"
+                            +"I would love to help you setting up account if needed. It will take couple of minute to setup your rime profile and within an hour your contents will be visible to others."
+                            +"\n\n"
+                            +"Thank you, and let me know how I can return the favour. "
+                            +"\n\n"
+                            +"Thanks"+"\n"
+                            +"Girish N"+"\n"
+                            +"Web : https://rime.co/@Girish"+"\n"
+                            +"E-mail : girishnayak@rime.co";
+                        
                             document.getElementsByClassName('btn btn_submit');
                             var el = document.getElementsByClassName('btn btn_submit');
                             el[0].click(); // enable to send message
                             console.log('msg send..');
                         }
-                        
-                        // mark it done
-                        userPaths[selfURL] = 1;
-                        console.log('done!');
-
-                        // update list
-                        data['userPaths'] = userPaths;
-                        chrome.storage.sync.set(data, function() { console.log("Saved", data); });
                     }, 2000);
                 }
             }
