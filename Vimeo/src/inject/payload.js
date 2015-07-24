@@ -117,7 +117,7 @@ chrome.storage.sync.get("userPaths", function (obj) {
                             +"Thanks"+"\n"
                             +"Girish N"+"\n"
                             +"Web : https://rime.co/@Girish"+"\n"
-                            +"E-mail : girishnayak@rime.co";
+                            +"E-mail : girish@rime.co";
                         
                             document.getElementsByClassName('btn btn_submit');
                             var el = document.getElementsByClassName('btn btn_submit');

