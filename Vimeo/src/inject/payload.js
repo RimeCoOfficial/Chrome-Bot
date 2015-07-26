@@ -1,158 +1,93 @@
 console.log('loaded!');
 
-// browse
-function getElementsStartsWithId( id ) {
-  var children = document.body.getElementsByTagName('*');
-  var elements = [], child;
-  for (var i = 0, length = children.length; i < length; i++) {
-    child = children[i];
-    if (child.id.substr(0, id.length) == id)
-      elements.push(child);
-  }
-  return elements;
+var base_url = 'https://vimeo.com';
+
+localforage.config({
+    driver      : localforage.INDEXEDDB, // Force WebSQL; same as using setDriver()
+    name        : 'myApp',
+    version     : 1.0,
+    size        : 4980736, // Size of database, in bytes. WebSQL-only for now.
+    storeName   : 'keyvaluepairs', // Should be alphanumeric, with underscores.
+    description : 'some description'
+});
+
+$(document).ready(function() {
+  fill_db();
+});
+
+function fill_db()
+{
+  $("li[id^=user_]").each(function(i) {
+    var user_link = $(this).find('a:first').attr('href');
+
+    user_link = base_url + user_link;
+    console.log(user_link);
+
+    var key = user_link;
+    var value = {};
+    value.msg_sent = Date();
+
+    value = JSON.stringify(value);
+    localforage.setItem(key, value, function(err, value) {
+      // console.log(value);
+    });
+  });
+
+  goto_next_page();
 }
 
-var data = {};
+function goto_next_page()
+{
+  var next_page_url = $("a[rel^=next]").attr('href');
 
-// Reset save data
-// data['userPaths'] = {};
-// chrome.storage.sync.set(data, function() { console.log("Saved reset", data); });
+  // next_page_url = undefined;
+  if (next_page_url === undefined)
+  {
+    // save the db
+    save_db_file()
+  }
+  else
+  {
+    // redirect
+    console.log('Redirecct to next page: ' + next_page_url);
 
-chrome.storage.sync.get("userPaths", function (obj) {
-    console.log('userPaths', obj);
+    next_page_url = base_url + next_page_url;
+    this.document.location = next_page_url;
+  }
+}
 
-    page_url = document.URL;
+function save_db_file()
+{
+  console.log('Saving db');
 
-    if (page_url.substring(0, 17) == "https://vimeo.com")
-    {
-        var userPaths = {};
-        userPaths = obj['userPaths'];
-        if (userPaths == undefined) userPaths = {};
+  data = [];
+  localforage.iterate(function(value, key, iterationNumber) {
+    // Resulting key/value pair -- this callback
+    // will be executed for every item in the
+    // database.
+    console.log([key, value]);
 
-        if (Object.keys(userPaths).length == 0)
-        {
-            // function browse(data)
-            var el = getElementsStartsWithId('user_');
-            if (el.length > 0)
-            {
-                for (var i = 0; i < el.length; i++) {
-                // for (var i = 0; i < 2; i++) {
-                  an_list = el[i].getElementsByTagName('a');
-                  path = 'https://vimeo.com' + an_list[0].getAttribute('href');
-                  // console.log(path);
+    var entry = {}
+    entry.key = key;
+    entry.value = value;
+    data.push(entry);
+  }, function() {
+    console.log('Iteration has completed');
 
-                  userPaths[path] = 0;
-                };
+    data = JSON.stringify(data);
+    download(data, 'vimeo.json', 'application/json');
+  });
+}
 
-                // console.log(userPaths);
+// save the db
+function download(text, name, type) {
+    // text = typeof text !== 'undefined' ? text : '';
+    name = typeof name !== 'undefined' ? name : 'untitled.txt';
+    type = typeof type !== 'undefined' ? type : 'text/plain';
 
-                console.log(Object.keys(userPaths).length + ' users found');
-
-                var elNext = document.getElementsByClassName('pagination_next');
-                if (elNext.length > 0)
-                {
-                    nextAnchor = elNext[0].getElementsByTagName('a');
-                    nextPath = 'https://vimeo.com' + nextAnchor[0].getAttribute('href');
-                    // nextAnchor.click();
-                    console.log('next: ' + nextPath);
-                    // this.document.location = nextPath;
-
-                    userPaths['next'] = nextPath;
-                }
-
-                data['userPaths'] = userPaths;
-                chrome.storage.sync.set(data, function() { console.log("Saved", data); });
-
-                
-                window.setTimeout(function() {
-                    this.document.location = path;
-                }, 2000);
-            }
-        }
-        else {
-            
-            selfURL = document.URL;
-            
-            // check user in the list
-            if (userPaths[selfURL] == 0)
-            {
-                // mark it done
-                userPaths[selfURL] = 1;
-                console.log('done!');
-
-                // update list
-                data['userPaths'] = userPaths;
-                chrome.storage.sync.set(data, function() { console.log("Saved", data); });
-
-                var el = document.getElementsByClassName('message btn iconify_envelope_b en');
-                if (el.length > 0)
-                {
-                    el[0].click();
-
-                    // 1. wait for page to load
-                    // 2. send message
-                    window.setTimeout(function() {
-
-                        var count = document.getElementsByClassName('stat_list_count');
-                        countValue = count[0].childNodes[0].nodeValue;
-
-                        if (countValue > 5)
-                        {
-                            var h1content = document.getElementById('content');
-                            var h1span = h1content.getElementsByTagName('span')[0];
-                            var userFullName = h1span.childNodes[0].nodeValue;
-
-                            document.getElementById('cm_message').value = 'Hey '+userFullName+','
-                            +"\n\n"
-                            +"I like the art you are making. Your content is creative and engaging.\n"
-                            +"\n"
-                            +"Join the group of content creators. These people are vimeoers, youtubers, bloggers, artists and many other creative people from other niche community."
-                            +"\n\n"
-                            +"I am Girish, Co-Founder of Rime would like to invite you to join Rime  https://rime.co/?invited_by=Girish ."
-                            +"\n\n"
-                            +"I would love to help you setting up account if needed. It will take couple of minute to setup your rime profile and within an hour your contents will be visible to others."
-                            +"\n\n"
-                            +"Thank you, and let me know how I can return the favour. "
-                            +"\n\n"
-                            +"Thanks"+"\n"
-                            +"Girish N"+"\n"
-                            +"Web : https://rime.co/@Girish"+"\n"
-                            +"E-mail : girish@rime.co";
-                        
-                            document.getElementsByClassName('btn btn_submit');
-                            var el = document.getElementsByClassName('btn btn_submit');
-                            el[0].click(); // enable to send message
-                            console.log('msg send..');
-                        }
-                    }, 2000);
-                }
-            }
-
-            window.setTimeout(function() {
-
-                var got_next_user = 0;
-                // goto next target
-                for (var uPath in userPaths)
-                {
-                    if (userPaths[uPath] == 0)
-                    {
-                        got_next_user = 1;
-                        console.log('next: '+uPath);
-                        this.document.location = uPath;
-                        break;
-                    }
-                }
-
-                if (got_next_user == 0) {
-
-                    // reset data
-                    data['userPaths'] = {};
-                    chrome.storage.sync.set(data, function() { console.log("Saved reset", data); });
-
-                    // goto next page
-                    this.document.location = userPaths['next'];
-                }
-            }, 4000);
-        }
-    }
-});
+    var a = document.createElement("a");
+    var file = new Blob([text], {type: type});
+    a.href = URL.createObjectURL(file);
+    a.download = name;
+    a.click();
+}

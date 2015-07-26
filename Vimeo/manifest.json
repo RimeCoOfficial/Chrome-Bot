@@ -14,7 +14,7 @@
     "scripts": ["src/inject/inject.js"]
   },
   "permissions": [
-    "<all_urls>",
+    "https://vimeo.com/*",
     "tabs",
     "storage",
     "unlimitedStorage"

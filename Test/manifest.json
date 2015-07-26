@@ -14,7 +14,7 @@
     "scripts": ["src/inject/inject.js"]
   },
   "permissions": [
-    "<all_urls>",
+    "http://example.com/*",
     "tabs",
     "storage",
     "unlimitedStorage"
