@@ -3,12 +3,12 @@ console.log('loaded!');
 var base_url = 'https://vimeo.com';
 
 localforage.config({
-    driver      : localforage.INDEXEDDB, // Force WebSQL; same as using setDriver()
-    name        : 'myApp',
-    version     : 1.0,
-    size        : 4980736, // Size of database, in bytes. WebSQL-only for now.
-    storeName   : 'keyvaluepairs', // Should be alphanumeric, with underscores.
-    description : 'some description'
+  driver      : localforage.INDEXEDDB, // Force WebSQL; same as using setDriver()
+  name        : 'myApp',
+  version     : 1.0,
+  size        : 4980736, // Size of database, in bytes. WebSQL-only for now.
+  storeName   : 'keyvaluepairs', // Should be alphanumeric, with underscores.
+  description : 'some description'
 });
 
 $(document).ready(function() {

@@ -1,5 +1,5 @@
 {
-  "name": "Chrome-Bot Test",
+  "name": "Chrome-Bot Example",
   "version": "1.0.0",
   "manifest_version": 2,
   "description": "A auto tasking extension for Google Chrome.",
