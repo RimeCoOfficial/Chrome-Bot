@@ -13,6 +13,13 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
         file: 'src/inject/mozilla-localForage-1.2.4/localforage.min.js'
       },
       function () {
+
+        // hash = window.location.pathname.substr(1);
+        // console.log(window.location);
+        // console.log(hash);
+        // var reg = new RegExp('^[0-9]$');
+        // console.log(reg.test(hash));
+        
         chrome.tabs.executeScript(tabId,
         {
           file: 'src/inject/payload.js'
