@@ -1,6 +1,12 @@
 console.log('loaded!');
 
+var my_url = 'https://vimeo.com/user42434394';
+
 var base_url = 'https://vimeo.com';
+var current_url = window.location.href;
+var current_uri = window.location.pathname;
+
+var hash = window.location.hash;
 
 localforage.config({
   driver      : localforage.INDEXEDDB, // Force WebSQL; same as using setDriver()
@@ -11,91 +17,323 @@ localforage.config({
   description : 'some description'
 });
 
-// users from channel
-
 $(document).ready(function() {
-  fill_db();
-  goto_next_page();
+  // hash callback
+  if (hash !== '') {
+    var fn = window[ hash.substr(1) ];
+    if(typeof fn === 'function') { fn(); }
+  }
+
+  // decider
+  get_next();
 });
 
-function fill_db()
-{
-  $("p[class=meta]").each(function(i) {
-    var user_link = $(this).find('a').attr('href');
+function get_next(callback) {
+  var new_follow = 0;
+  var old_follow = 0;
 
-    user_link = base_url + user_link;
-    console.log(user_link);
+  var today = Date();
+  localforage.iterate(function(value, key, iterationNumber) {
 
-    var key = user_link;
-    // var value = {};
-    // value.msg_sent = Date();
+    if (value.follow !== undefined) {
+      var diff_sec = time_diff_sec(value.follow);
+      if (diff_sec < (24 * 60 * 60)) { // 24 hrs
+        new_follow = new_follow + 1;
+      }
+      else if (value.unfollow == undefined) {
+        old_follow = old_follow + 1;
+      }
+    }
+
+  }, function() {
+    console.log('Todays task count: ' + new_follow);
+    console.log('Old task count: ' + old_follow);
+
+    var next_task_url = null;
+
+    localforage.iterate(function(value, key, iterationNumber) {
+      if (next_task_url == null) {
+        if (value.follow == undefined) {
+          // randomly generated todays task count
+          var max_new_follow = 400 + (rand(100) + 1); // 400 to 500
+
+          if (new_follow < max_new_follow) {
+            console.log('Follow: ' + key);
+            next_task_url = key + '#follow_unfollow'; // 1. follow
+          }
+        }
+        else {
+          if (value.videos == undefined) {
+            console.log('Get videos: ' + key);
+            next_task_url = key + '/videos#get_videos'; // 2. get videos
+          }
+          else {
+            for (var i = 0; i < value.videos.length; i++) {
+              if (value.videos[i].like == undefined) {
+                console.log('Like: ' + value.videos[i].url);
+                next_task_url = value.videos[i].url + '#like_unlike'; // 3. like
+                break;
+              }
+            }
+          }
+
+          if (next_task_url == null) {
+            if (value.msg == undefined) {
+              console.log('Message: ' + key);
+              next_task_url = key + '#msg'; // 4. message
+            }
+            else {
+              var diff_sec = time_diff_sec(value.follow);
+              if (diff_sec > (24 * 60 * 60)) {
+
+                // after 24 hrs
+                
+                for (var i = 0; i < value.videos.length; i++) {
+                  if (value.videos[i].unlike == undefined) {
+                    console.log('Unlike: ' + value.videos[i].url);
+                    next_task_url = value.videos[i].url + '#like_unlike'; // 5. unlike
+                    break;
+                  }
+                }
+
+                if (next_task_url == null) {
+                  if (value.unfollow == undefined) {
+                    console.log('Unfollow: ' + key);
+                    next_task_url = key + '#follow_unfollow'; // 6. unfollow
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }, function() {
+      console.log('Iteration is complete');
+
+      if (next_task_url !== null) {
+        console.log('Redirect to: ' + next_task_url);
+        window.location = next_task_url;
+      }
+      else console.log('All done!');
+    });
+  });
+}
+
+
+// ////////////////// hash methods //////////////////
+
+// https://vimeo.com/01234567#like_unlike
+
+function like_unlike() {
+  // get author
+  var user_url = $("a[rel=author]").attr('href');
+  if (user_url != undefined) {
+    user_url = base_url + user_url;
+
+    key = user_url;
+    console.log('key: ' + key);
+    // console.log(base_url + current_uri);
 
     localforage.getItem(key, function(err, value) {
-      // console.log(value);
+      if (value != null && value.videos != undefined) {
+        for (var i = 0; i < value.videos.length; i++) {
+          if (value.videos[i].url == (base_url + current_uri)) {
 
-      if (value === null) {
-        value = {};
-        value = JSON.stringify(value);
-        localforage.setItem(key, value, function(err, value) {
-          // console.log(value);
-        });
+            // mark like
+            $("div[class=box]").each(function() {
+              // console.log($(this).find('label').text());
+              var state = $(this).find('label').text();
+
+              if (state == 'Like' || state == 'Unlike') {
+                var d = $(this).find('button');
+
+                if (value.videos[i].like == undefined) {
+                  value.videos[i].like = Date();
+
+                  if (state == 'Like') {
+                    $(d).click();
+                    console.log(state + ' <3');
+                  }
+                }
+                else if (value.videos[i].unlike == undefined) {
+                  value.videos[i].unlike = Date();
+
+                  if (state == 'Unlike') {
+                    $(d).click();
+                    console.log(state + ' 3<');
+                  }
+                }
+              }
+            });
+
+            localforage.setItem(key, value, function(err, value) {});
+          }
+        };
+      }
+      else { console.log('Video not found in db'); }
+    });
+  }
+  else { console.log('Author not found in db'); }
+}
+
+
+// https://vimeo.com/user0123456#msg
+
+function msg() {
+  key = base_url + current_uri;
+  console.log('key: ' + key);
+
+  localforage.getItem(key, function(err, value) {
+    // console.log(value);
+
+    if (value.msg == undefined) {
+      var name = $('h1').first().find('span').first().text();
+
+      // class="message btn iconify_envelope_b en"
+      $('a.message.btn').each(function(i) {
+        var state = $(this).text();
+
+        if (state == 'Message') {
+          this.click();
+
+          window.setTimeout(function() {
+            var custom_msg = 'Hey ' + name +"\n\
+\n\
+I like the art you are making. Your content is creative and engaging.\n\
+\n\
+Join the group of content creators. These people are vimeoers, youtubers, bloggers, artists and many other creative people from other niche community.\n\
+\n\
+I am Girish, Co-Founder of Rime would like to invite you to join Rime  https://rime.co/?invited_by=Girish .\n\n\
+I would love to help you setting up account if needed. It will take couple of minute to setup your rime profile and within an hour your contents will be visible to others.\n\
+\n\
+Thank you, and let me know how I can return the favour.\n\
+\n\
+Thanks\n\
+Girish Nayak\n\
+Web: https://rime.co/@Girish\n\
+E-mail: girish@rime.co";
+
+            $('#cm_message').val(custom_msg);
+
+            $('.btn.btn_submit').first().click();
+          }, 1000);
+
+          value.msg = Date();
+          localforage.setItem(key, value, function(err, value) {});
+        }
+      });
+    }
+  });
+}
+
+
+// https://vimeo.com/user0123456#follow_unfollow
+
+function follow_unfollow() {
+  key = base_url + current_uri;
+  console.log('key: ' + key);
+
+  localforage.getItem(key, function(err, value) {
+    // console.log(value);
+
+    $('a[id=follow_btn]').each(function(i) {
+      var state = $(this).text();
+
+      if (state == 'Follow' || state == 'Following') {
+
+        if (value.follow == undefined) {
+          value.follow = Date();
+
+          if (state == 'Follow') {
+            this.click();
+            console.log(state + ' <3');
+          }
+        }
+        else if (value.unfollow == undefined) {
+          value.unfollow = Date();
+
+          if (state == 'Following') {
+            this.click();
+            console.log('state' + ' 3<');
+          }
+        }
+
+        localforage.setItem(key, value, function(err, value) {});
       }
     });
   });
 }
 
-function goto_next_page()
-{
-  var next_page_url = $("a[rel^=next]").attr('href');
 
-  // next_page_url = undefined;
-  if (next_page_url === undefined)
-  {
-    // save the db
-    save_db_file()
-  }
-  else
-  {
-    next_page_url = base_url + next_page_url;
+// https://vimeo.com/user0123456/videos#get_videos
 
-    // redirect
-    console.log('Redirecct to next page: ' + next_page_url);
-    this.document.location = next_page_url;
-  }
-}
+function get_videos() {
+  key = base_url + current_uri;
 
-function save_db_file()
-{
-  console.log('Saving db');
+  // https://vimeo.com/user0123456/videos => https://vimeo.com/user0123456
+  key = key.substring(0, key.length - 7) ;
+  console.log('key: ' + key);
 
-  data = [];
-  localforage.iterate(function(value, key, iterationNumber) {
-    // Resulting key/value pair -- this callback
-    // will be executed for every item in the
-    // database.
-    console.log([key, value]);
+  localforage.getItem(key, function(err, value) {
+    // console.log(value);
 
-    var entry = {}
-    entry.key = key;
-    entry.value = value;
-    data.push(entry);
-  }, function() {
-    console.log('Iteration has completed');
+    if (value.videos == undefined) {
+      // get videos
+      var videos = [];
+      $("li[id^=clip]").each(function(i) {
+        var video_url = $(this).find('a').attr('href');
+        video_url = base_url + video_url;
 
-    data = JSON.stringify(data);
-    download(data, 'vimeo.json', 'application/json');
+        videos.push(video_url);
+      });
+
+      value.videos = [];
+
+      var count = videos.length;
+      if (count > 0) {
+
+        var max_pick = 2;
+        max_pick = rand(max_pick) + 1; // pick at-least 1
+        max_pick = Math.min(max_pick, count);
+
+        for (var i = 0; i < max_pick; i++) {
+          var rand_index = rand(count);
+
+          if (videos[rand_index] != null) {
+            video = {};
+            video.url = videos[rand_index];
+
+            value.videos.push(video);
+
+            videos[rand_index] = null;
+          }
+        };
+      }
+      
+      console.log('Picked: ' + value.videos.length + ' video(s)');
+      localforage.setItem(key, value, function(err, value) {});
+    }
   });
 }
 
-// save the db
-function download(text, name, type) {
-    // text = typeof text !== 'undefined' ? text : '';
-    name = typeof name !== 'undefined' ? name : 'untitled.txt';
-    type = typeof type !== 'undefined' ? type : 'text/plain';
 
-    var a = document.createElement("a");
-    var file = new Blob([text], {type: type});
-    a.href = URL.createObjectURL(file);
-    a.download = name;
-    a.click();
+// ////////////////// utility //////////////////
+
+function rand(max) { return Math.floor((Math.random() * max)); }
+
+function time_diff_sec(ago) {
+  var today = new Date();
+  var ago = new Date(ago);
+
+  var msec = today.getTime() - ago.getTime();
+
+  // var hh = Math.floor(msec / 1000 / 60 / 60);
+  // msec -= hh * 1000 * 60 * 60;
+  // var mm = Math.floor(msec / 1000 / 60);
+  // msec -= mm * 1000 * 60;
+  // var ss = Math.floor(msec / 1000);
+  // msec -= ss * 1000;
+
+  // console.log(hh + ":" + mm + ":" + ss);
+  return msec/1000;
 }
