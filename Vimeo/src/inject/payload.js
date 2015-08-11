@@ -197,18 +197,15 @@ function msg() {
           this.click();
 
           window.setTimeout(function() {
-            var custom_msg = 'Hey ' + name +"\n\
+            var custom_msg = 'Hey ' + name +",\n\
 \n\
-I like the art you are making. Your content is creative and engaging.\n\
+I am the founder of Rime, a search and discovery platform to explore creative content (stories, art, video, photo, recipies, etc), and creative people on the internet. Rime helps you to connect multiple social media accounts and brings all your shared content to one timeline. It creates unique identity which holds all your online presence and makes it easier for other people to follow you and know more about you. Check out my profile https://rime.co/@girish/about\n\
 \n\
-Join the group of content creators. These people are vimeoers, youtubers, bloggers, artists and many other creative people from other niche community.\n\
+Rime is still in public beta so here is the invitation link\n\
+https://rime.co/?invited_by=girish\n\
 \n\
-I am Girish, Co-Founder of Rime would like to invite you to join Rime  https://rime.co/?invited_by=Girish .\n\n\
-I would love to help you setting up account if needed. It will take couple of minute to setup your rime profile and within an hour your contents will be visible to others.\n\
+Please give us feedback and invite your friends too. Thanks a lot for your time,\n\
 \n\
-Thank you, and let me know how I can return the favour.\n\
-\n\
-Thanks\n\
 Girish Nayak\n\
 Web: https://rime.co/@Girish\n\
 E-mail: girish@rime.co";
