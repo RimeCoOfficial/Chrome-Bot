@@ -217,7 +217,7 @@ function msg() {
           this.click();
 
           window.setTimeout(function() {
-            var custom_msg = 'Hey ' + name +",\n\
+            var custom_msg = 'Hey ' + name + ",\n\
 \n\
 I am the founder of Rime, a search and discovery platform to explore creative content (stories, art, video, photo, recipies, etc), and creative people on the internet. Rime helps you to connect multiple social media accounts and brings all your shared content to one timeline. It creates unique identity which holds all your online presence and makes it easier for other people to follow you and know more about you. Check out my profile https://rime.co/@girish/about\n\
 \n\
