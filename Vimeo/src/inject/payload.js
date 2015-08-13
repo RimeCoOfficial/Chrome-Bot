@@ -25,7 +25,11 @@ $(document).ready(function() {
   }
 
   // decider
-  get_next();
+  var rand_time = 5000 + rand(5000); // 5 to 10 sec
+  console.log('Wait for ' + (rand_time / 1000) + ' secs');
+  window.setTimeout(function() {
+    get_next();
+  }, rand_time);
 });
 
 function get_next(callback) {
@@ -60,18 +64,21 @@ function get_next(callback) {
           if (new_follow < max_new_follow) {
             console.log('Follow: ' + key);
             next_task_url = key + '#follow_unfollow'; // 1. follow
+            value.follow = Date();
           }
         }
         else {
           if (value.videos == undefined) {
             console.log('Get videos: ' + key);
             next_task_url = key + '/videos#get_videos'; // 2. get videos
+            value.videos = [];
           }
           else {
             for (var i = 0; i < value.videos.length; i++) {
               if (value.videos[i].like == undefined) {
                 console.log('Like: ' + value.videos[i].url);
                 next_task_url = value.videos[i].url + '#like_unlike'; // 3. like
+                value.videos[i].like = Date();
                 break;
               }
             }
@@ -81,6 +88,7 @@ function get_next(callback) {
             if (value.msg == undefined) {
               console.log('Message: ' + key);
               next_task_url = key + '#msg'; // 4. message
+              value.msg = Date();
             }
             else {
               var diff_sec = time_diff_sec(value.follow);
@@ -92,6 +100,7 @@ function get_next(callback) {
                   if (value.videos[i].unlike == undefined) {
                     console.log('Unlike: ' + value.videos[i].url);
                     next_task_url = value.videos[i].url + '#like_unlike'; // 5. unlike
+                    value.videos[i].unlike = Date();
                     break;
                   }
                 }
@@ -100,11 +109,22 @@ function get_next(callback) {
                   if (value.unfollow == undefined) {
                     console.log('Unfollow: ' + key);
                     next_task_url = key + '#follow_unfollow'; // 6. unfollow
+                    value.unfollow = Date();
                   }
                 }
               }
             }
           }
+        }
+
+        // Permission Denied or any other issues: mark done
+        if (current_url == next_task_url) {
+          next_task_url = null;
+
+          var h1 = $('h1').first().text();
+          console.log('There was some problem: ' + h1);
+          
+          localforage.setItem(key, value, function(err, value) {});
         }
       }
     }, function() {
@@ -213,7 +233,7 @@ E-mail: girish@rime.co";
             $('#cm_message').val(custom_msg);
 
             $('.btn.btn_submit').first().click();
-          }, 1000);
+          }, 2000);
 
           value.msg = Date();
           localforage.setItem(key, value, function(err, value) {});
@@ -251,7 +271,7 @@ function follow_unfollow() {
 
           if (state == 'Following') {
             this.click();
-            console.log('state' + ' 3<');
+            console.log(state + ' 3<');
           }
         }
 
@@ -334,3 +354,5 @@ function time_diff_sec(ago) {
   // console.log(hh + ":" + mm + ":" + ss);
   return msec/1000;
 }
+
+// No unfollow options https://vimeo.com/1027films

@@ -24,27 +24,38 @@ $(document).ready(function() {
 // ]
 function modify() {
   console.log('Modifying db');
-  localforage.iterate(function(value, key, iterationNumber) {
-    // Resulting key/value pair -- this callback
-    // will be executed for every item in the
-    // database.
-    // console.log([key, value]);
 
-    if (value.videos != undefined) {
-      for (var i = 0; i < value.videos.length; i++) {
-        if (value.videos[i].like != undefined) { 
-          console.log(key + ' ' + value.videos[i].like);
-        }
-      }
-    }
+  key = 'https://vimeo.com/1027films';
+  localforage.getItem(key, function(err, value) {
+    value.unfollow = Date();
+    value.issue = 'cant unfollow';
 
-    // localforage.setItem(key, value, function(err, value) { if (err) console.error(err); });
+    console.log(value);
 
-    // if (iterationNumber % 100 == 0) console.log('.');
-
-  }, function() {
-    console.log('Iteration has completed');
+    localforage.setItem(key, value, function(err, value) {});
   });
+
+  // localforage.iterate(function(value, key, iterationNumber) {
+  //   // Resulting key/value pair -- this callback
+  //   // will be executed for every item in the
+  //   // database.
+  //   // console.log([key, value]);
+
+  //   if (value.videos != undefined) {
+  //     for (var i = 0; i < value.videos.length; i++) {
+  //       if (value.videos[i].like != undefined) { 
+  //         console.log(key + ' ' + value.videos[i].like);
+  //       }
+  //     }
+  //   }
+
+  //   // localforage.setItem(key, value, function(err, value) { if (err) console.error(err); });
+
+  //   // if (iterationNumber % 100 == 0) console.log('.');
+
+  // }, function() {
+  //   console.log('Iteration has completed');
+  // });
 }
 
 function save_db_file()
