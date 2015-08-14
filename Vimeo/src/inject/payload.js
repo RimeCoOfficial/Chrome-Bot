@@ -40,8 +40,7 @@ function get_next(callback) {
   localforage.iterate(function(value, key, iterationNumber) {
 
     if (value.follow !== undefined) {
-      var diff_sec = time_diff_sec(value.follow);
-      if (diff_sec < (24 * 60 * 60)) { // 24 hrs
+      if (is_today(value.follow)) { // 24 hrs
         new_follow = new_follow + 1;
       }
       else if (value.unfollow == undefined) {
@@ -91,8 +90,7 @@ function get_next(callback) {
               value.msg = Date();
             }
             else {
-              var diff_sec = time_diff_sec(value.follow);
-              if (diff_sec > (24 * 60 * 60)) {
+              if ( ! is_today(value.follow)) {
 
                 // after 24 hrs
                 
@@ -338,21 +336,20 @@ function get_videos() {
 
 function rand(max) { return Math.floor((Math.random() * max)); }
 
-function time_diff_sec(ago) {
-  var today = new Date();
-  var ago = new Date(ago);
+function is_today(date_str) {
+  var now = new Date();
+  var ago = new Date(date_str);
 
-  var msec = today.getTime() - ago.getTime();
-
-  // var hh = Math.floor(msec / 1000 / 60 / 60);
-  // msec -= hh * 1000 * 60 * 60;
-  // var mm = Math.floor(msec / 1000 / 60);
-  // msec -= mm * 1000 * 60;
-  // var ss = Math.floor(msec / 1000);
-  // msec -= ss * 1000;
-
-  // console.log(hh + ":" + mm + ":" + ss);
-  return msec/1000;
+  if (now.getDate() == ago.getDate()) {
+    if (now.getMonth() == ago.getMonth()) {
+      if (now.getFullYear() == ago.getFullYear()) {
+        return true;
+      }
+    }
+  }
+  
+  return false;
 }
 
+// Case:
 // No unfollow options https://vimeo.com/1027films
