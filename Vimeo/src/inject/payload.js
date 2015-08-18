@@ -124,6 +124,17 @@ function get_next(callback) {
           
           localforage.setItem(key, value, function(err, value) {});
         }
+
+        // https://vimeo.com/ondemand/ascorewithoutafilm/85260756#like_unlike
+        // 102930430 85229438 85260756
+        if (current_url.includes('/ondemand/')) {
+          current_url_split = current_url.split('/');
+          next_task_url_split = next_task_url.split('/');
+          if (current_url_split[ current_url_split.length - 1 ] == next_task_url_split[ next_task_url_split.length - 1 ]) {
+            next_task_url = null;
+            localforage.setItem(key, value, function(err, value) {});
+          }
+        }
       }
     }, function() {
       console.log('Iteration is complete');
