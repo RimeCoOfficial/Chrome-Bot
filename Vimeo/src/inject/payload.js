@@ -25,7 +25,7 @@ $(document).ready(function() {
   }
 
   // decider
-  var rand_time = 5000 + rand(5000); // 5 to 10 sec
+  var rand_time = getRandomInt(5000, 10000); // 5 to 10 sec
   console.log('Wait for ' + (rand_time / 1000) + ' secs');
   window.setTimeout(function() {
     get_next();
@@ -58,7 +58,7 @@ function get_next(callback) {
       if (next_task_url == null) {
         if (value.follow == undefined) {
           // randomly generated todays task count
-          var max_new_follow = 400 + (rand(100) + 1); // 400 to 500
+          var max_new_follow = getRandomInt(400, 500); // 400 to 500
 
           if (new_follow < max_new_follow) {
             console.log('Follow: ' + key);
@@ -115,24 +115,26 @@ function get_next(callback) {
           }
         }
 
-        // Permission Denied or any other issues: mark done
-        if (current_url == next_task_url) {
-          next_task_url = null;
-
-          var h1 = $('h1').first().text();
-          console.log('There was some problem: ' + h1);
-          
-          localforage.setItem(key, value, function(err, value) {});
-        }
-
-        // https://vimeo.com/ondemand/ascorewithoutafilm/85260756#like_unlike
-        // 102930430 85229438 85260756
-        if (current_url.includes('/ondemand/')) {
-          current_url_split = current_url.split('/');
-          next_task_url_split = next_task_url.split('/');
-          if (current_url_split[ current_url_split.length - 1 ] == next_task_url_split[ next_task_url_split.length - 1 ]) {
+        if (next_task_url !== null) {
+          // Permission Denied or any other issues: mark done
+          if (current_url == next_task_url) {
             next_task_url = null;
+
+            var h1 = $('h1').first().text();
+            console.log('There was some problem: ' + h1);
+            
             localforage.setItem(key, value, function(err, value) {});
+          }
+          else if (current_url.startsWith('https://vimeo.com/ondemand/')) {
+            // https://vimeo.com/ondemand/ascorewithoutafilm/85260756#like_unlike
+            // 102930430 85229438 85260756
+            
+            current_url_split = current_url.split('/');
+            next_task_url_split = next_task_url.split('/');
+            if (current_url_split[ current_url_split.length - 1 ] == next_task_url_split[ next_task_url_split.length - 1 ]) {
+              next_task_url = null;
+              localforage.setItem(key, value, function(err, value) {});
+            }
           }
         }
       }
@@ -317,13 +319,12 @@ function get_videos() {
 
       var count = videos.length;
       if (count > 0) {
-
         var max_pick = 2;
-        max_pick = rand(max_pick) + 1; // pick at-least 1
+        max_pick = getRandomIntInclusive(1, max_pick); // pick at-least 1
         max_pick = Math.min(max_pick, count);
 
         for (var i = 0; i < max_pick; i++) {
-          var rand_index = rand(count);
+          var rand_index = getRandomInt(0, count);
 
           if (videos[rand_index] != null) {
             video = {};
@@ -345,7 +346,25 @@ function get_videos() {
 
 // ////////////////// utility //////////////////
 
-function rand(max) { return Math.floor((Math.random() * max)); }
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+// Returns a random number between 0 (inclusive) and 1 (exclusive)
+function getRandom() {
+  return Math.random();
+}
+// Returns a random number between min (inclusive) and max (exclusive)
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
+// Returns a random integer between min (included) and max (excluded)
+// Using Math.round() will give you a non-uniform distribution!
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+// Returns a random integer between min (included) and max (included)
+// Using Math.round() will give you a non-uniform distribution!
+function getRandomIntInclusive(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function is_today(date_str) {
   var now = new Date();
