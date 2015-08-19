@@ -229,16 +229,16 @@ function msg() {
 
           window.setTimeout(function() {
             var custom_msg = 'Hey ' + name + ",\n\
+Being a content creator I always faced problem for my content reach and visibility. It’s very difficult to have friends and family in Vimeo, Flickr and other niche platforms. So I built a platform that helps you and your brand/company to connect multiple social media accounts and brings all your shared content to one timeline. It creates unique identity which holds all your online presence and makes it easier for other people to follow you and know more about you.\n\
 \n\
-I am the founder of Rime, a search and discovery platform to explore creative content (stories, art, video, photo, recipies, etc), and creative people on the internet. Rime helps you to connect multiple social media accounts and brings all your shared content to one timeline. It creates unique identity which holds all your online presence and makes it easier for other people to follow you and know more about you. Check out my profile https://rime.co/@girish/about\n\
+Check out example of content creators https://rime.co/@valeriacis and connect with more creators https://rime.co/search/people\n\
 \n\
-Rime is still in public beta so here is the invitation link\n\
-https://rime.co/?invited_by=girish\n\
+I would like to invite you to give it a try. It will take couple of minutes to setup profile. Here is my personal invitation link to join with out waiting for invitation link https://rime.co/?invited_by=girish\n\
 \n\
-Please give us feedback and invite your friends too. Thanks a lot for your time,\n\
+Please give it a try and give me feedback.\n\
 \n\
-Girish Nayak\n\
-Web: https://rime.co/@Girish\n\
+Girish Nayak,\n\
+https://rime.co/@Girish\n\
 E-mail: girish@rime.co";
 
             $('#cm_message').val(custom_msg);
