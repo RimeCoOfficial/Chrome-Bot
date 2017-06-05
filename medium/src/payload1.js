@@ -74,8 +74,6 @@ function download(text, name, type) {
     a.click();
 }
 
-// setTimeout(function(){ getProfile()
-// 						addtodb()
-// 						},90000);
-
-save_db_file();
+setTimeout(function(){ getProfile()
+						addtodb()
+						},120000);

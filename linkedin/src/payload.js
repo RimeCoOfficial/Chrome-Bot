@@ -25,15 +25,15 @@ localforage.config({
  		//storing the count in local storage
  		localforage.setItem('counter', counter);
 
- 		//sending request
- 		// var b = $(this).find('button.search-result__actions--primary');
- 		// $(b).click();
+ 		sending request
+ 		var b = $(this).find('button.search-result__actions--primary');
+ 		$(b).click();
 
- 		//confirming sending request
- 		// var c = $(this).find('button.button-primary-large');
- 		// setTimeout(function(){
- 		// $(c).click();
- 		// }, 1000);
+ 		confirming sending request
+ 		var c = $(this).find('button.button-primary-large');
+ 		setTimeout(function(){
+ 		$(c).click();
+ 		}, 1500);
 
  		//cancel request
  		// var c = $(this).find('send-invite__cancel-btn');
