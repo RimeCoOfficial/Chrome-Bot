@@ -1,6 +1,6 @@
 console.log('loaded!!!!!');
 var countOfPagesScrolled = 0;
-var maxcount = 150;
+var maxcount = 1500;
 
 localforage.config({
   driver      : localforage.INDEXEDDB, // Force WebSQL; same as using setDriver()
@@ -11,42 +11,46 @@ localforage.config({
   description : 'some description'
 });
 
- function sendrequest(){
+function setrequest(interval = 500){
+
  	//taking the details one person a time
  	$('li.search-result').each(function() {
- 		// var details = $(this).find('div.search-result__info').text();
- 		var details = $(this).text();
- 		console.log(details);
- 		console.log(this);
+ 		var details = $(this).find('div.search-result__info').text();
+        details = details.replace(/\s+/g, '');
+ 		// details = $(this).text().replace(/ /g,'');
+ 		// console.log(details);
+ 		// console.log(this);
  		
  		//counting the number of results in a page
  		counter++;
- 		console.log("count is " + counter);
  		//storing the count in local storage
  		localforage.setItem('counter', counter);
 
- 		// // sending request
- 		// var b = $(this).find('button.search-result__actions--primary');
- 		// $(b).click();
+        var b = $(this).find('button.search-result__actions--primary.button-secondary-medium.m5');
+        setTimeout( function(){ $(b).click(); }, interval);
+        interval += 1000;
 
- 		// // confirming sending request
- 		// var c = $(this).find('button.button-primary-large.ml3');
- 		// setTimeout(function(){
- 		// $(c).click();
- 		// }, 1000);
+        setTimeout( function(){
+            var c = $('#li-modal-container');
+            // var popup_btn = c.find('button.send-invite__cancel-btn');
+            var popup_btn = c.find('button.button-primary-large.ml3');
 
- 		// cancel request
- 		var c = $(this).find('send-invite__cancel-btn');
- 		setTimeout(function(){
- 		$(c).click();
- 		}, 1000);
+            $(popup_btn).each(function() { $(this).click(); });
 
+            console.log(details);
+
+        }, interval);
+        interval += 3000;
  	});
+
+    console.log("count is " + counter);
+
  	//going to the next page
  	setTimeout(function(){
+        console.log("go to next page 🤖");
+
 		$("button.next").click();
-	}, 2000);
- 	
+	}, interval+2000);
  }
 
  $(document).ready(function() {
@@ -75,6 +79,6 @@ function scrollDown(height, countOfPagesScrolled){
 		if(height != document.body.clientHeight && countOfPagesScrolled > 0){
 			scrollDown(document.body.clientHeight, --countOfPagesScrolled);
 		}else
-			return sendrequest();
+			return setrequest();
 	}, 1500);
 }
