@@ -12,7 +12,7 @@ localforage.config({
   description : 'some description'
 });
 
-function setrequest(interval = 500){
+function sendrequest(interval = 500){
 
  	//taking the details one person a time
  	$('li.search-result').each(function() {
@@ -44,7 +44,7 @@ function setrequest(interval = 500){
         interval += 3000;
  	});
 
-    console.log("count is " + counter);
+    console.log("total request sent: " + counter);
 
  	//going to the next page
  	setTimeout(function(){
@@ -68,8 +68,9 @@ function setrequest(interval = 500){
 
 		//only send maxcount request at one time
 		if(counter < maxcount){
-	 		scrollDown(document.body.clientHeight,0);
+	 		scrollDown(document.body.clientHeight,1);
 		}
+        else console.log('max request sent ' + maxcount + '!!!');
 	});
 });
 
@@ -78,8 +79,13 @@ function scrollDown(height, countOfPagesScrolled){
 	scroll(0, document.body.clientHeight);
 	setTimeout(function(){
 		if(height != document.body.clientHeight && countOfPagesScrolled > 0){
+
+            console.log('scroll to bottom');
 			scrollDown(document.body.clientHeight, --countOfPagesScrolled);
-		}else
-			return setrequest();
+		}
+        else{
+
+			return sendrequest();
+        }
 	}, 3000);
 }
