@@ -1,4 +1,5 @@
-console.log('loaded!!!!!');
+console.log('🤖 loaded!!!!!');
+
 var countOfPagesScrolled = 0;
 var maxcount = 1500;
 
@@ -28,7 +29,7 @@ function setrequest(interval = 500){
 
         var b = $(this).find('button.search-result__actions--primary.button-secondary-medium.m5');
         setTimeout( function(){ $(b).click(); }, interval);
-        interval += 1000;
+        interval += 2000;
 
         setTimeout( function(){
             var c = $('#li-modal-container');
@@ -47,10 +48,10 @@ function setrequest(interval = 500){
 
  	//going to the next page
  	setTimeout(function(){
-        console.log("go to next page 🤖");
+        console.log("go to next page");
 
 		$("button.next").click();
-	}, interval+2000);
+	}, interval+1000);
  }
 
  $(document).ready(function() {
@@ -80,5 +81,5 @@ function scrollDown(height, countOfPagesScrolled){
 			scrollDown(document.body.clientHeight, --countOfPagesScrolled);
 		}else
 			return setrequest();
-	}, 1500);
+	}, 3000);
 }
