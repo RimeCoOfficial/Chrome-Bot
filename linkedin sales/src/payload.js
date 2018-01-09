@@ -1,7 +1,7 @@
 console.log('🤖 loaded!!!!!');
 
 var countOfPagesScrolled = 0;
-var maxcount = 500;
+var maxcount = 1000;
 
 localforage.config({
   driver      : localforage.INDEXEDDB, // Force WebSQL; same as using setDriver()
@@ -30,7 +30,7 @@ function sendrequest(interval){
 
         var b = $(this).find('button.action.connect');
         setTimeout( function(){ $(b).click(); }, interval);
-        interval += 2000 + Math.floor(Math.random() * 5000);
+        interval += 15000 + Math.floor(Math.random() * 59000);
 
         setTimeout( function(){
             var c = $('#dialog');
@@ -56,7 +56,7 @@ function sendrequest(interval){
     //going to the next page
     setTimeout(function(){
         console.log("go to next page");
-        $("next-pagination.page-link").click();
+        $('a.next-pagination.page-link>span.pagination-text').click();
     }, interval+3000);
  }
 
