@@ -12,7 +12,7 @@ localforage.config({
   description : 'some description'
 });
 
-function sendrequest(interval){
+function sendrequest(){
     interval = 2000;
 
     //taking the details one person a time
@@ -30,8 +30,9 @@ function sendrequest(interval){
 
         var b = $(this).find('button.action.connect');
         setTimeout( function(){ $(b).click(); }, interval);
-        interval += 15000 + Math.floor(Math.random() * 59000);
+        interval += 15000 + Math.floor(Math.random() * 29000);
 
+        interval2 = 3000 + Math.floor(Math.random() * 10000);
         setTimeout( function(){
             var c = $('#dialog');
             var invite_btn = c.find('button.submit-button');
@@ -41,7 +42,7 @@ function sendrequest(interval){
 
             setTimeout(function(){
                 $(invite_btn).each(function() { $(this).click(); });
-            }, interval+3000);
+            }, interval2);
 
             console.log(details);
 
@@ -51,7 +52,7 @@ function sendrequest(interval){
             localforage.setItem('counter', counter);
 
         }, interval);
-        interval += 3000;
+        interval += interval2;
     });
 
     console.log("total request sent: " + counter);
@@ -60,7 +61,7 @@ function sendrequest(interval){
     setTimeout(function(){
         console.log("go to next page");
         $('a.next-pagination.page-link>span.pagination-text').click();
-    }, interval+3000);
+    }, interval + 3000);
  }
 
  $(document).ready(function() {
