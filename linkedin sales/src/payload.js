@@ -38,7 +38,10 @@ function sendrequest(interval){
             var text_area = c.find('#connect-message-content');
 
             $(text_area).val("Hi " + first_name + ", It's great to connect with like-minded people. I am the founder of AI blog building platform Rime(https://rime.co), IIT-B Alumni and working on a couple of cutting-edge products. I hope varied geographical knowledge will be useful for each other. Thanks for connecting!");
-            $(invite_btn).each(function() { $(this).click(); });
+
+            setTimeout(function(){
+                $(invite_btn).each(function() { $(this).click(); });
+            }, interval+3000);
 
             console.log(details);
 
