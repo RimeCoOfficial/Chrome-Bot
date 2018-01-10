@@ -16,7 +16,7 @@ function sendrequest(){
     interval = 2000;
 
     //taking the details one person a time
-    $('li.result').each(function() {
+    $('li.result.loading.member').each(function() {
         var details = $(this).find('div.entity-info').text();
         details = details.replace(/\s+/g, '');
 
@@ -24,35 +24,37 @@ function sendrequest(){
         var name_res = name.split(" ");
         var first_name = name_res[0];
         
-        // details = $(this).text().replace(/ /g,'');
-        // console.log(details);
+        details = $(this).text().replace(/ /g,'');
+        // console.log(name);
         // console.log(this);
 
         var b = $(this).find('button.action.connect');
-        setTimeout( function(){ $(b).click(); }, interval);
-        interval += 15000 + Math.floor(Math.random() * 29000);
+        if (b.length > 0)
+        {
+            setTimeout( function(){ $(b).click(); }, interval);
+            interval += 15000 + Math.floor(Math.random() * 29000);
 
-        interval2 = 3000 + Math.floor(Math.random() * 10000);
-        setTimeout( function(){
-            var c = $('#dialog');
-            var invite_btn = c.find('button.submit-button');
-            var text_area = c.find('#connect-message-content');
+            setTimeout( function(){
+                var c = $('#dialog');
+                var invite_btn = c.find('button.submit-button');
+                var text_area = c.find('#connect-message-content');
 
-            $(text_area).val("Hi " + first_name + ", It's great to connect with like-minded people. I am the founder of AI blog building platform Rime(https://rime.co), IIT-B Alumni and working on a couple of cutting-edge products. I hope varied geographical knowledge will be useful for each other. Thanks for connecting!");
+                $(text_area).val("Hi " + first_name + ", It's great to connect with like-minded people. I am the founder of AI blog building platform Rime(https://rime.co), IIT-B Alumni and working on a couple of cutting-edge products. I hope varied geographical knowledge will be useful for each other. Thanks for connecting!");
 
-            setTimeout(function(){
-                $(invite_btn).each(function() { $(this).click(); });
-            }, interval2);
+                setTimeout(function(){
+                    $(invite_btn).each(function() { $(this).click(); });
+                }, 3000 + Math.floor(Math.random() * 9000));
 
-            console.log(details);
+                console.log(details);
 
-            //counting the number of results in a page
-            counter++;
-            //storing the count in local storage
-            localforage.setItem('counter', counter);
+                //counting the number of results in a page
+                counter++;
+                //storing the count in local storage
+                localforage.setItem('counter', counter);
 
-        }, interval);
-        interval += interval2;
+            }, interval);
+            interval += 3000 + 10000;
+        }
     });
 
     console.log("total request sent: " + counter);
